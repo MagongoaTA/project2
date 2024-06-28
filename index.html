@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+        }
+        #pomodoro-timer {
+            background-color: #ffffff;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        #time {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+            transition: background-color 0.3s;
+        }
+        #start-btn {
+            background-color: #007bff;
+            color: white;
+        }
+        #start-btn:hover {
+            background-color: #0056b3;
+        }
+        #pause-btn {
+            background-color: #ffc107;
+            color: white;
+        }
+        #pause-btn:hover {
+            background-color: #e0a800;
+        }
+        #reset-btn {
+            background-color: #6c757d;
+            color: white;
+        }
+        #reset-btn:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div id="pomodoro-timer">
+        <h1>Pomodoro Timer</h1>
+        <div id="time">25:00</div>
+        <button id="start-btn">Start</button>
+        <button id="pause-btn">Pause</button>
+        <button id="reset-btn">Reset</button>
+        <audio id="alarm-sound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+    </div>
+    <script>
+        const timeDisplay = document.getElementById('time');
+        const startButton = document.getElementById('start-btn');
+        const pauseButton = document.getElementById('pause-btn');
+        const resetButton = document.getElementById('reset-btn');
+        const alarmSound = document.getElementById('alarm-sound');
+
+        let workTime = 25 * 60;
+        let breakTime = 5 * 60;
+        let timeLeft = workTime;
+        let isRunning = false;
+        let isWorkInterval = true;
+        let interval;
+
+        function updateTimeDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timeDisplay.textContent = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                interval = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        updateTimeDisplay();
+                    } else {
+                        alarmSound.play();
+                        if (isWorkInterval) {
+                            timeLeft = breakTime;
+                            isWorkInterval = false;
+                        } else {
+                            timeLeft = workTime;
+                            isWorkInterval = true;
+                        }
+                        updateTimeDisplay();
+                    }
+                }, 1000);
+            }
+        }
+
+        function pauseTimer() {
+            if (isRunning) {
+                clearInterval(interval);
+                isRunning = false;
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(interval);
+            isRunning = false;
+            timeLeft = workTime;
+            isWorkInterval = true;
+            updateTimeDisplay();
+        }
+
+        startButton.addEventListener('click', startTimer);
+        pauseButton.addEventListener('click', pauseTimer);
+        resetButton.addEventListener('click', resetTimer);
+
+        updateTimeDisplay();
+    </script>
+</body>
+</html>
